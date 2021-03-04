@@ -16,29 +16,29 @@ export default class DictionaryStore {
 
     @action
     getWordsCountStartedWithLetter = (letter: string): number => {
-        return Object(this.dictionary).keys().filter((word: string) => {
+        return Object.keys(this.dictionary).filter((word: string) => {
              return word.toLowerCase().startsWith(letter.toLowerCase())
         }).length;
     };
 
     @action
-    getWordsWithLetter = (letter: string): number => {
-        return Object(this.dictionary).keys().filter((word: string) => {
+    getWordsCountWithLetter = (letter: string): number => {
+        return Object.keys(this.dictionary).filter((word: string) => {
             return word.toLowerCase().includes(letter.toLowerCase())
         }).length;
     };
 
     @action
     getWordsCountEndedWithLetter = (letter: string): number => {
-        return Object(this.dictionary).keys().filter((word: string) => {
+        return Object.keys(this.dictionary).filter((word: string) => {
             return word.toLowerCase().endsWith(letter.toLowerCase())
         }).length;
     };
 
     @action
-    getWordsCountWithSameLetterRepeatedTwice = (letter: string): string[] => {
+    getWordsCountWithSameLetterRepeatedTwice = (letter: string): number => {
         const regexp = new RegExp(`${letter}{2}`);
-        return Object(this.dictionary).keys().filter((word: string) => {
+        return Object.keys(this.dictionary).filter((word: string) => {
             return regexp.test(word)
         }).length;
     };
@@ -50,10 +50,10 @@ export default class DictionaryStore {
     };
 
     @action
-    getPalindromes = (): string[] => {
-        return Object(this.dictionary).keys().filter((word: string) => {
+    getPalindromes = (): string => {
+        return Object.keys(this.dictionary).filter((word: string) => {
             return isPalindrome(word);
-        });
+        }).toString();
     };
 
     @action
