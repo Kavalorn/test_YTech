@@ -3,39 +3,35 @@ import {fetchDictionary} from './api';
 import {isPalindrome} from "./helpers";
 
 export default class DictionaryStore {
-    @observable dictionary: { [key: string]: string } = {};
+    dictionary: { [key: string]: string } = {};
 
     constructor() {
         this.getDictionary()
     }
 
     @action
-    getDictionary = () => {
+    getDictionary = (): void => {
         fetchDictionary().then(dictionary => this.dictionary = dictionary)
     };
 
-    @action
     getWordsCountStartedWithLetter = (letter: string): number => {
         return Object.keys(this.dictionary).filter((word: string) => {
              return word.toLowerCase().startsWith(letter.toLowerCase())
         }).length;
     };
 
-    @action
     getWordsCountWithLetter = (letter: string): number => {
         return Object.keys(this.dictionary).filter((word: string) => {
             return word.toLowerCase().includes(letter.toLowerCase())
         }).length;
     };
 
-    @action
     getWordsCountEndedWithLetter = (letter: string): number => {
         return Object.keys(this.dictionary).filter((word: string) => {
             return word.toLowerCase().endsWith(letter.toLowerCase())
         }).length;
     };
 
-    @action
     getWordsCountWithSameLetterRepeatedTwice = (letter: string): number => {
         const regexp = new RegExp(`${letter}{2}`);
         return Object.keys(this.dictionary).filter((word: string) => {
@@ -44,21 +40,14 @@ export default class DictionaryStore {
     };
 
     // and the "other queries"
-    @action
-    getWordDescription = (word: string): string => {
-        return this.dictionary.hasOwnProperty(word) ? this.dictionary[word] : '';
+    getWordDescription = (word: string): string | null => {
+        return this.dictionary.hasOwnProperty(word) ? this.dictionary[word] : "Word isn`t found";
     };
 
-    @action
-    getPalindromes = (): string => {
+    getPalindromes = (): string | null => {
         return Object.keys(this.dictionary).filter((word: string) => {
             return isPalindrome(word);
-        }).toString();
-    };
-
-    @action
-    getDictionaryItemDescription = (key: string): string => {
-        return this.dictionary[key];
+        }).join(', ')
     };
 
 }
