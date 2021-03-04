@@ -1,25 +1,43 @@
-import {Button, Card, CardBody, CardText, CardTitle, Col, Input} from "reactstrap";
+import {Button, Card, CardBody, CardTitle, Col, Input} from "reactstrap";
 import React from "react";
 import {Row} from "reactstrap";
 import { css } from '@emotion/css';
-import {Text} from "recharts";
+import CountChart from "../CountChart";
 
 interface IProps {
     descriptionText: string,
     action: (letter: string) => number | null
 }
 
+export type ChartDataChunk = {
+    letter: string,
+    repetitions: number
+}
+
 const WordsCounter = ({action, descriptionText}: IProps) => {
     const [inputValue, setInputValue] = React.useState<string>('');
     const [wordsAmount, setWordsAmount] = React.useState<number | null>(null);
+    const [chartData, setChartData] = React.useState<ChartDataChunk[]>([]);
 
-    const clickHandler = () => {
-        if (!action) throw new Error('action is not defined');
-        const newWordsAmount = action(inputValue);
-        setWordsAmount(newWordsAmount);
+    const updateChartDataItem = (newItem: ChartDataChunk) => {
+        if (chartData.find(chunk => chunk.letter === newItem.letter)) {
+            setChartData(chartData.map(chunk => chunk.letter !== newItem.letter ? chunk : newItem ));
+        } else {
+            setChartData([...chartData, newItem]);
+        }
     };
 
-    const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const clickHandler = (): void => {
+        const newWordsAmount = action(inputValue);
+        setWordsAmount(newWordsAmount);
+        const newItem: ChartDataChunk = {
+            letter: inputValue.toLowerCase(),
+            repetitions: newWordsAmount || 0
+        };
+        updateChartDataItem(newItem)
+    };
+
+    const inputChangeHandler = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const value = e.target.value;
         if (value.length > 1) return;
         const newValue = value.replace(/[^A-Za-z]/ig, '');
@@ -42,13 +60,14 @@ const WordsCounter = ({action, descriptionText}: IProps) => {
                             <Input value={inputValue} onChange={inputChangeHandler}/>
                         </Col>
                         <Col xs={3}>
-                            <Button color="success" className={css`width: 100%`} onClick={clickHandler}>fire</Button>
+                            <Button color="success" className={css`width: 100%`} onClick={clickHandler} disabled={!inputValue}>fire</Button>
                         </Col>
                         <Col xs={3}>
                             <Input value={wordsAmount ?? ""} readOnly />
                         </Col>
                     </Row>
                 </Col>
+                <CountChart data={chartData} />
             </CardBody>
         </Card>
     )
